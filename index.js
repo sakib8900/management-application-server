@@ -18,8 +18,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.connect();
-    console.log("Connected to MongoDB!");
+    // await client.connect();
 
     const usersCollection = client.db("manage-application").collection("users")
     const tasksCollection = client.db("manage-application").collection("tasks");
@@ -56,11 +55,11 @@ app.get('/tasks', async (req, res) => {
   }
 });
 
-// Update Task (PUT)
+// Update Task 
 app.put('/tasks/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    // Validate if id is a valid ObjectId
+
     if (!ObjectId.isValid(id)) {
       return res.status(400).send({ error: "Invalid task ID format" });
     }
@@ -82,11 +81,10 @@ app.put('/tasks/:id', async (req, res) => {
   }
 });
 
-// Delete Task (DELETE)
+// Delete Task
 app.delete('/tasks/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    // Validate if id is a valid ObjectId
     if (!ObjectId.isValid(id)) {
       return res.status(400).send({ error: "Invalid task ID format" });
     }
@@ -99,11 +97,10 @@ app.delete('/tasks/:id', async (req, res) => {
   }
 });
 
-// Update Task Category (PATCH)
+// Update Task
 app.patch('/tasks/:id/category', async (req, res) => {
   try {
     const id = req.params.id;
-    // Validate if id is a valid ObjectId
     if (!ObjectId.isValid(id)) {
       return res.status(400).send({ error: "Invalid task ID format" });
     }
@@ -117,21 +114,17 @@ app.patch('/tasks/:id/category', async (req, res) => {
   }
 });
 
-// Reorder Tasks (PUT)
+// Reorder Tasks
 app.put('/tasks/reorder', async (req, res) => {
   try {
     const { updatedTasks } = req.body;
-    
-    // Validate that updatedTasks exists and is an array
     if (!updatedTasks || !Array.isArray(updatedTasks)) {
       return res.status(400).send({ error: "Invalid task data format" });
     }
-    
-    // Validate each task ID before creating operations
+
     const bulkUpdates = [];
     
     for (const task of updatedTasks) {
-      // Skip invalid IDs
       if (!task._id || !ObjectId.isValid(task._id)) {
         continue;
       }
@@ -143,8 +136,7 @@ app.put('/tasks/reorder', async (req, res) => {
         }
       });
     }
-    
-    // Only proceed if we have valid operations
+
     if (bulkUpdates.length === 0) {
       return res.status(400).send({ error: "No valid tasks to update" });
     }
